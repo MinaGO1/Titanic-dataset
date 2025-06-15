@@ -1,19 +1,26 @@
 import sys
 sys.dont_write_bytecode = True
-
+import inspect
 import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
-import warnings
-import inspect
+def auto_imports():
+    """Import main libraries like pandas,seaborn,...""" 
+    import pandas as pd
+    import numpy as np
+    import seaborn as sns
+    import matplotlib.pyplot as plt
+    import warnings
+    warnings.filterwarnings('ignore')
+    global_ = inspect.currentframe().f_back.f_globals
+    global_['pd'] = pd
+    global_['np'] = np
+    global_['sns'] = sns
+    global_['plt'] = plt
 
 
-
-warnings.filterwarnings('ignore')
-
-
-def accuracy_f1_scores(X_train:pd.DataFrame , y_train:np.array , model):
+def accuracy_f1_scores(X_train:pd.DataFrame , y_train:np.ndarray , model):
     """Getting accuracy and f1 scores using cross validation values
 
     Args:
@@ -22,7 +29,7 @@ def accuracy_f1_scores(X_train:pd.DataFrame , y_train:np.array , model):
         model   (Any): model that you will train
 
     Returns:
-        Accuracy_F1_array (np.array): accuracy is the first array in the list and f1 the second array
+        Accuracy_F1_array (np.ndarray): accuracy is the first array in the list and f1 the second array
                 
     """
     from sklearn.model_selection import cross_val_score , StratifiedKFold
@@ -41,15 +48,15 @@ def accuracy_f1_scores(X_train:pd.DataFrame , y_train:np.array , model):
     }))
     return accuracy , f1
 
-def drop_percentages(X_test:pd.DataFrame ,y_test:np.array , model:any , accuracy:np.array , f1:np.array):
+def drop_percentages(X_test:pd.DataFrame ,y_test:np.ndarray , model:any , accuracy:np.ndarray , f1:np.ndarray):
     """Get accuracy and f1 drop percentage to check overfitting or underfitting
 
     Args:
         X_test (pd.DataFrame): indenpendent test sample
-        y_test (np.array): denpendent test sample
+        y_test (np.ndarray): denpendent test sample
         model (Any): model you fitted
-        accuracy (np.array): accuracy scores that got from **accuracy_f1_scores** func
-        f1 (np.array): f1 scores that got from **accuracy_f1_scores** func
+        accuracy (np.ndarray): accuracy scores that got from **accuracy_f1_scores** func
+        f1 (np.ndarray): f1 scores that got from **accuracy_f1_scores** func
     Returns:
         Drop_percentags (dict): Accuracy drop percentage , f1 drop percentage , y_pred
     """
@@ -84,3 +91,25 @@ def model_results_imports():
     caller_globals['classification_report'] = sklearn.metrics.classification_report
     caller_globals['confusion_matrix'] = sklearn.metrics.confusion_matrix
     caller_globals['f1_score'] = sklearn.metrics.f1_score
+    
+    
+def save_model_predictions(y_pred:np.ndarray , modelname:str)-> pd.DataFrame:
+    """Save model predictions to a csv file 
+
+    Args:
+        y_pred (np.ndarray): your predict y from the model
+        modelname (str): model name to save csv file
+
+    Returns:
+        pd.DataFrame: returns a pandas dataframe as a csv file
+    """
+    import os
+    predict_df = pd.read_csv(r'E:\Data science\Titanic dataset\data\Processed data\Data Analysis\processed_data.csv') # loading predict df to get passengers ID
+    predict_df = predict_df[predict_df['ind'] == 'test']
+    pd.DataFrame({
+    'PassengerId': predict_df['PassengerId'],
+    
+    'Survived': y_pred # Predicting predict data
+    }).to_csv(os.path.join('E:\Data science\Titanic dataset\data\Processed data\Data Modeling' ,
+                           modelname+'_predictions.csv'),
+              index=False)
