@@ -5,6 +5,9 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
+from numpy.typing import NDArray
+import warnings 
+warnings.filterwarnings('ignore')
 def auto_imports():
     """Import main libraries like pandas,seaborn,...""" 
     import pandas as pd
@@ -18,7 +21,6 @@ def auto_imports():
     global_['np'] = np
     global_['sns'] = sns
     global_['plt'] = plt
-
 
 def accuracy_f1_scores(X_train:pd.DataFrame , y_train:np.ndarray , model):
     """Getting accuracy and f1 scores using cross validation values
@@ -81,6 +83,41 @@ def drop_percentages(X_test:pd.DataFrame ,y_test:np.ndarray , model:any , accura
     }
     
 
+
+# def drop_percentages(y_pred:NDArray[np.int64] ,y_test:NDArray[np.int64] , model:any ,accuracy:float,print: bool = False):
+#     """Get accuracy and f1 drop percentage to check overfitting or underfitting
+
+#     Args:
+#         y_pred (NDArray[np.int64]): predicted trager
+#         y_test (NDArray[np.float64]): denpendent test sample
+#         model (Any): model you fitted
+#         accuracy (float): accuracy score of the seen data
+#     Returns:
+#         Drop_percentags (dict): Accuracy drop percentage , y_pred
+#     """
+#     # See accuracy and f1 drop percentage
+#     from sklearn.metrics import accuracy_score, f1_score
+
+#     accuracy_unseen = accuracy_score(y_test , y_pred)
+#     f1_unseen = f1_score(y_test , y_pred)
+    
+#     accuracy_drop_percentage =round(
+#         (accuracy - accuracy_unseen) * 100 
+#         , 1)
+
+#     if print:
+#         print('accuracy of the seen data: ' , accuracy)
+#         print('accuracy of the unseen data: ' , accuracy_unseen) 
+#         print('f1 of the unseen data: ' , f1_unseen) 
+#     return {
+#         'Accuracy drop percentage' : accuracy_drop_percentage,
+#         'unseen data':{
+#             'accuracy':accuracy_unseen,
+#             'f1':f1_unseen
+#         }
+#     }
+    
+
 def model_results_imports():
     """Import all needed functions to get the accuracy of the classification models
     and inject them into the caller's global namespace.
@@ -93,11 +130,11 @@ def model_results_imports():
     caller_globals['f1_score'] = sklearn.metrics.f1_score
     
     
-def save_model_predictions(y_pred:np.ndarray , modelname:str)-> pd.DataFrame:
+def save_model_predictions(y_pred:NDArray[np.float64] , modelname:str)-> pd.DataFrame:
     """Save model predictions to a csv file 
 
     Args:
-        y_pred (np.ndarray): your predict y from the model
+        y_pred (NDArray[np.float64]): your predict y from the model
         modelname (str): model name to save csv file
 
     Returns:
@@ -113,3 +150,105 @@ def save_model_predictions(y_pred:np.ndarray , modelname:str)-> pd.DataFrame:
     }).to_csv(os.path.join('E:\Data science\Titanic dataset\data\Processed data\Data Modeling' ,
                            modelname+'_predictions.csv'),
               index=False)
+    
+# getting best random  state of train_test_split
+# def get_best_seed(x:pd.DataFrame , y:NDArray[np.float64] , model:any , iter:int=50 , max_drop: float = 10.0) -> int:
+#     """Get best seed for random_state param of the train test split
+
+#     Args:
+#         x (pd.DataFrame): independent values (feature)
+#         y (NDArray[np.float64]): depenedent values (target)
+#         model (any): classification model like (svm , rf , logit , knn)
+#         iter (int, optional): number of seeds you want (from 1 to iter). Defaults to 50.
+#         max_drop (float ,optional): max drop precentage for accuracy and f1. Defaults to 10.0.
+
+#     Returns:
+#         best_seed: return best seed for train test split random state
+#     """
+#     from sklearn.model_selection import train_test_split
+#     best_seed = None
+#     best_score = -np.inf
+#     best_precision_0 = best_recall_0 = 0
+#     best_precision_1 = best_recall_1 = 0
+#     lowest_accuracy_drop = np.inf
+
+#     for seed in range(iter):
+#         X_train , X_test , y_train , y_test = train_test_split(
+#             x , y , test_size=0.2 , random_state=seed
+#         )
+#         # make model
+#         model.fit(X_train , y_train) # fit model
+
+#         from sklearn.metrics import classification_report       
+#         model_probs = model.predict_proba(X_test)[:,1]
+#         report = get_best_thershold(model_probs , y_test) # get best results using best threshold value
+#         class_0 = report['0'] #class 0 scores
+#         class_1 = report['1'] #class 1 scores
+#         best_threshold = report['best_threshold'] # best threshold value
+#         report_drop = drop_percentages(model.predict(X_test) , y_test , model , model.score(X_train , y_train))
+#         accuracy_drop = report_drop['Accuracy drop percentage'] # extract drop percentage from dict
+
+#         precision_0_threshold , recall_0_threshold = class_0['precision'] , class_0['recall']
+#         precision_1_threshold , recall_1_threshold = class_1['precision'] , class_1['recall']
+
+#         # Score: prioritize lowest accuracy drop, then sum of precision/recall
+#         score = -(accuracy_drop) + (precision_0_threshold + recall_0_threshold + precision_1_threshold + recall_1_threshold)
+
+#         if accuracy_drop <= max_drop and score > best_score:
+#             best_score = score
+#             best_seed = seed
+#             best_precision_0 , best_recall_0 = precision_0_threshold , recall_0_threshold 
+#             best_precision_1 , best_recall_1 = precision_1_threshold , recall_1_threshold
+#             lowest_accuracy_drop = accuracy_drop
+
+#     print('best precision for class 0: ', best_precision_0)            
+#     print('best recall for class 0: ', best_recall_0)            
+#     print('best precision for class 1: ', best_precision_1)            
+#     print('best recall for class 1: ', best_recall_1)            
+#     print('best seed: ', best_seed)
+#     return best_seed
+
+def get_best_thershold(y_probs: NDArray[np.float64] , y_true: NDArray[np.float64] , iter:int = 50) -> int:
+    """get best threshold that gets the hightest precision and recall in both of the classes
+
+    Args:
+        y_probs (NDArray[np.float64]): y_probabilities of class 1
+        y_test (NDArray[np.float64]): y_true 
+        iter (int): count of thresholds from value 0 to 1
+
+    Returns:
+        best_threshold: return best threshold value and both of the classes results
+    """
+    from sklearn.metrics import classification_report
+    best_threshold = None
+    best_precision_0 = best_recall_0 = 0
+    best_precision_1 = best_recall_1 = 0
+    
+    for threshold in np.linspace(0 , 1 ,iter):
+        y_pred_custom = y_probs >= threshold
+        report = classification_report(y_true, y_pred_custom, output_dict=True)
+        class_0 = report['0']
+        class_1 = report['1']
+        precision_0 , recall_0 = class_0['precision'] ,class_0['recall']
+        precision_1 , recall_1 = class_1['precision'] ,class_1['recall']
+        
+        if (precision_0 > best_precision_0) and (precision_1 >best_precision_1) \
+            and (recall_0 > best_recall_0) and (recall_1 > best_recall_1):
+                best_precision_0 , best_precision_1 = precision_0 , precision_1
+                best_recall_0 , best_recall_1 = recall_0 , recall_1
+                
+                best_threshold = threshold
+                
+    return {
+        '0': {
+            'precision' : best_precision_0,
+            'recall' :best_recall_0
+        },
+        '1': {
+            'precision':best_precision_1,
+            'recall':best_recall_1
+        },
+        'best_threshold' : best_threshold
+    }
+        
+    
