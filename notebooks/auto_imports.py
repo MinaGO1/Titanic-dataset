@@ -1,5 +1,6 @@
 import sys
 sys.dont_write_bytecode = True
+
 import inspect
 import pandas as pd
 import numpy as np
@@ -250,5 +251,4 @@ def get_best_thershold(y_probs: NDArray[np.float64] , y_true: NDArray[np.float64
         },
         'best_threshold' : best_threshold
     }
-        
-    
+
