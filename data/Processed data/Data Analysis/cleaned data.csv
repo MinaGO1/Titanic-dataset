@@ -60,7 +60,7 @@ PassengerId,Survived,Pclass,Name,Sex,Age,SibSp,Parch,Ticket,Fare,Cabin,Embarked,
 59,1.0,2,"West, Miss. Constance Mirium",female,5.0,1,2,C.A. 34651,27.75,C23 C25 C27,S,train
 60,0.0,3,"Goodwin, Master. William Frederick",male,11.0,5,2,CA 2144,46.9,C23 C25 C27,S,train
 61,0.0,3,"Sirayanian, Mr. Orsen",male,22.0,0,0,2669,7.2292,C23 C25 C27,C,train
-62,1.0,1,"Icard, Miss. Amelie",female,38.0,0,0,113572,80.0,B28,,train
+62,1.0,1,"Icard, Miss. Amelie",female,38.0,0,0,113572,80.0,B28,S,train
 63,0.0,1,"Harris, Mr. Henry Birkhardt",male,45.0,1,0,36973,83.475,C83,S,train
 64,0.0,3,"Skoog, Master. Harald",male,4.0,3,2,347088,27.9,C23 C25 C27,S,train
 65,0.0,1,"Stewart, Mr. Albert A",male,29.881137667304014,0,0,PC 17605,27.7208,C23 C25 C27,C,train
@@ -828,7 +828,7 @@ PassengerId,Survived,Pclass,Name,Sex,Age,SibSp,Parch,Ticket,Fare,Cabin,Embarked,
 827,0.0,3,"Lam, Mr. Len",male,29.881137667304014,0,0,1601,56.4958,C23 C25 C27,S,train
 828,1.0,2,"Mallet, Master. Andre",male,1.0,0,2,S.C./PARIS 2079,37.0042,C23 C25 C27,C,train
 829,1.0,3,"McCormack, Mr. Thomas Joseph",male,29.881137667304014,0,0,367228,7.75,C23 C25 C27,Q,train
-830,1.0,1,"Stone, Mrs. George Nelson (Martha Evelyn)",female,62.0,0,0,113572,80.0,B28,,train
+830,1.0,1,"Stone, Mrs. George Nelson (Martha Evelyn)",female,62.0,0,0,113572,80.0,B28,S,train
 831,1.0,3,"Yasbeck, Mrs. Antoni (Selini Alexander)",female,15.0,1,0,2659,14.4542,C23 C25 C27,C,train
 832,1.0,2,"Richards, Master. George Sibley",male,0.83,1,1,29106,18.75,C23 C25 C27,S,train
 833,0.0,3,"Saad, Mr. Amin",male,29.881137667304014,0,0,2671,7.2292,C23 C25 C27,C,train
