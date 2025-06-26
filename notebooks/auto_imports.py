@@ -148,7 +148,7 @@ def save_model_predictions(y_pred:NDArray[np.float64] , modelname:str)-> pd.Data
     'PassengerId': predict_df['PassengerId'],
     
     'Survived': y_pred # Predicting predict data
-    }).to_csv(os.path.join('E:\Data science\Titanic dataset\data\Processed data\Data Modeling' ,
+    }).to_csv(os.path.join('E:\Data science\Titanic dataset\data\Processed data\Data Mining' ,
                            modelname+'_predictions.csv'),
               index=False)
     
